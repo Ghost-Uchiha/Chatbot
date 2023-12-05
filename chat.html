@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Chatbot</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #chat-container {
+        width: 400px;
+        background-color: #ffeb3b;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+      }
+      #chat-header {
+        background-color: #05487e;
+        color: #fff;
+        padding: 10px;
+        border-radius: 10px 10px 0 0;
+      }
+      
+      #chat-header h2 {
+        margin: 0;
+      }
+      .row{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #chatbox {
+        height: 300px;
+        overflow-y: scroll;
+        padding: 10px;
+        box-sizing: border-box;
+        border-bottom: 2px solid #ddd;
+        display: flex;
+        flex-direction: column;
+      }
+      .you {
+        font-weight: bold;
+      }
+      .bot {
+        font-weight: bold;
+      }
+      .user,
+      .chopperomon {
+        max-width: 70%;
+        word-wrap: break-word;
+        padding: 8px;
+        border-radius: 8px;
+        margin: 8px;
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .user {
+        align-self: flex-end;
+        background-color: #b3a211; 
+        color: #fff; 
+      }
+
+      .chopperomon {
+        align-self: flex-start;
+        background-color: #05487e; 
+        color: #fff; 
+      }
+
+      #messageInput {
+        width: 80%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 5px;
+        margin: 10px;
+      }
+
+      #sendButton,#deleteButton {
+        width: 18%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 5px;
+        margin: 10px;
+        background-color: #05487e;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        
+      }
+      #deleteButton{
+        height: 50px;
+        width: 50px;
+      }
+      #sendButton:hover {
+        background-color: #1565c0; 
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); 
+        transform: scale(1.);
+      }
+      #deleteButton:hover{
+        background-color: #1565c0; 
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); 
+        transform: scale(1.);
+      }
+
+      #popupButton {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: none;
+        border-top: 2px solid #ddd;
+        background-color: #ffeb3b;
+        cursor: pointer;
+        
+      }
+      #popupButton:hover {
+        background-color: #f3e77e;
+        color: #000;
+        
+      }
+      #popupMenu ul {
+        max-height: 145px; /* Set a fixed maximum height for the ul */
+        overflow-y: auto;
+      }
+      .popup-menu {
+        display: none;
+        position: absolute;
+        top: 58%;
+        left: 0;
+        background-color: #ffeb3b;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        z-index: 1;
+        width: 100%;
+        min-height: 50px;
+      }
+
+      .popup-menu ul {
+        list-style-type: none;
+
+        padding: 0;
+        margin: 0;
+      }
+
+      .popup-menu li {
+        padding: 8px;
+        cursor: pointer;
+        width: 80%;
+        border-radius: 10px;
+        transition: background-color 0.3s;
+      }
+
+      .popup-menu li:hover {
+        background-color: #ddd;
+        border-radius: 10px;
+        width: 80%;
+      }
+      button {
+        outline: none;
+      }
+
+      #chatbox::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #chatbox::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border-radius: 4px;
+      }
+
+      #chatbox::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+      #toggleButton {
+        background-image: url('https://whatfix.com/blog/wp-content/uploads/2022/10/insurance-chatbot.png');
+        background-size: cover; /* Ensure the image covers the entire button */
+        background-repeat: no-repeat; /* Prevent the image from repeating */
+        background-position: center; /* Center the image within the button */
+        padding: 50px; /* Adjust the padding based on your design */
+        height:auto;
+        width: auto;
+        border: none;
+        cursor: pointer;
+        transition: background-size 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    
+      #toggleButton:hover {
+         /* Increase size on hover */
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05); /* Increase size on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="toggleChat()" id="toggleButton"></button>
+    <div id="chat-container" style="display: none;">
+        <div id="chat-header">
+            <h2>Awesome Chatbot</h2>
+          </div>
+          <div id="chatbox"></div>
+          <div class="row">
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message..."
+        onkeydown="handleKeyDown(event)"
+      />
+      <button onclick="sendMessage()" id="sendButton">Send</button>
+      <button onclick="deleteChats()" id="deleteButton"><svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 64 64" id="bin"><path fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M50,14H14l3.72,38.3a4,4,0,0,0,4,3.7H42.29a4,4,0,0,0,4-3.7Z"></path><line x1="37.05" x2="38.11" y1="55.33" y2="18.97" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><line x1="25.89" x2="26.95" y1="18.97" y2="55.33" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><line x1="10" x2="54" y1="14" y2="14" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><polyline fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="24 14 26 8 38 8 40 14"></polyline></svg></button>
+      </div>
+      <!-- Button to open the pop-up menu -->
+      <button onclick="openPopupMenu()" id="popupButton">
+        Select a Question
+      </button>
+
+      <!-- Pop-up menu with predefined questions (generated in JavaScript) -->
+      <div id="popupMenu" class="popup-menu"></div>
+    </div>
+    <script>
+      const intents = {
+        intents: [
+          {
+            tag: "greeting",
+            patterns: [
+              "hello",
+              "hi",
+              "hii",
+              "hey",
+              "good morning",
+              "how are you",
+            ],
+            responses: [
+              "Hello! How can I assist you today?",
+              "Hi there! What can I help you with?",
+              "Hey! Welcome to our learning platform.",
+            ],
+          },
+          {
+            tag: "course_info",
+            patterns: [
+              "tell me about [course name]",
+              "information on [course name]",
+              "details about [course name]",
+            ],
+            responses: [
+              "Sure! [Course Name] is a [brief description of the course]. You can find more details on our website.",
+            ],
+          },
+          {
+            tag: "enrollment",
+            patterns: [
+              "how to enroll",
+              "enrollment process",
+              "sign up for a course",
+            ],
+            responses: [
+              "To enroll in a course, simply visit our website, browse the courses, and click on 'Enroll' for the course you're interested in.",
+            ],
+          },
+          {
+            tag: "upcoming_webinars",
+            patterns: ["upcoming webinars", "webinar schedule", "next webinar"],
+            responses: [
+              "We have some exciting webinars coming up! Check our events page for the schedule and topics.",
+            ],
+          },
+          {
+            tag: "account_assistance",
+            patterns: ["forgot my password", "reset password", "login help"],
+            responses: [
+              "If you've forgotten your password, you can reset it by clicking on the 'Forgot Password' link on the login page.",
+            ],
+          },
+          {
+            tag: "tech_support",
+            patterns: [
+              "technical issue",
+              "can't access course",
+              "site not working",
+            ],
+            responses: [
+              "I'm sorry to hear that you're having technical issues. Please contact our support team at support@example.com for assistance.",
+            ],
+          },
+          {
+            tag: "recommendation",
+            patterns: [
+              "suggest a course",
+              "what course should I take",
+              "recommendation",
+            ],
+            responses: [
+              "Based on your interests, I recommend checking out [Recommended Course]. It covers [brief description].",
+            ],
+          },
+          {
+            tag: "feedback",
+            patterns: [
+              "provide feedback",
+              "share my thoughts",
+              "rate the platform",
+            ],
+            responses: [
+              "We appreciate your feedback! You can share your thoughts by visiting the 'Feedback' section on our website.",
+            ],
+          },
+          {
+            tag: "payment_info",
+            patterns: [
+              "how to make a payment",
+              "payment options",
+              "course fees",
+            ],
+            responses: [
+              "To make a payment, go to the course page and click on 'Enroll.' You will find payment options and course fees listed there.",
+            ],
+          },
+          {
+            tag: "progress_tracking",
+            patterns: [
+              "track my progress",
+              "view my courses",
+              "completed courses",
+            ],
+            responses: [
+              "You can track your progress and view completed courses in your profile dashboard. Check the 'My Courses' section.",
+            ],
+          },
+        ],
+      };
+
+      // Array of questions and answers
+      const questionsAndAnswers = [
+        {
+          question: "Is Online Coaching worth it?",
+          answer:
+            "Choosing online coaching is a valuable choice as it offers significant time savings by eliminating the need for travel. Learning from top instructors at the institute becomes highly convenient as you can access the material anytime and from anywhere. Moreover, online coaching proves to be cost-effective, with self-paced courses priced at half the rate of traditional classroom coaching. If you seek motivation and teacher interaction, it is advisable to opt for live online coaching. On the other hand, if you are self-motivated and capable of studying independently, self-paced online coaching is the ideal option. You can check out this video to know more about online coaching: [Link to Video]",
+        },
+        {
+          question: "Do you provide free coaching?",
+          answer:
+            "Students who desire exam preparation have access to a wide range of free online coaching resources. These resources encompass:\n1. Availability of complimentary mock papers accompanied by comprehensive video solutions.\n2. YouTube tutorials focusing on specific topics such as Quantitative Aptitude, Logical Reasoning, and Verbal Ability and Reading Comprehension (VARC).\n3. Daily practice questions covering areas like VARC, Data Interpretation and Logical Reasoning (DILR), Quantitative Aptitude, General Awareness (GA), and Current Affairs (CA).\n4. Weekly free quizzes with the opportunity to win cash prizes.\nAn exemplary institute that provides diverse free online coaching resources is The Bodhi Tree.",
+        },
+        {
+          question: "Can weak students crack entrance exams?",
+          answer:
+            "Absolutely! Numerous students preparing for competitive exams are led astray by the mistaken notion that only geniuses can excel in cracking these exams. However, this belief is unfounded. The crucial factor for achieving success lies in consistent and organized preparation, a goal that is attainable by anyone. The only differentiation for a weaker student is that they may need to invest more effort compared to their peers. By commencing your preparation today and dedicating 2-3 hours of daily study, attaining success becomes entirely feasible.",
+        },
+        {
+          question: "How many CET attempts are allowed?",
+          answer:
+            'There are no specific restrictions on the number of attempts or age limitations for the CET exam. Candidates have the freedom to take the CET exam multiple times without any constraints. However, when it comes to gaining admission into the top B-schools, having 2 to 4 years of work experience is considered optimal. This range is often seen as the "sweet spot" for the placement process. Although there is no strict limit, it is generally advisable for candidates to aim for a maximum of 4 attempts to ensure they fall within this desirable range of work experience.',
+        },
+        {
+          question: "Can exams be cleared without coaching?",
+          answer:
+            "Annually, a significant cohort of students manages to pass exams without relying on coaching assistance. This accomplishment is attainable for individuals naturally skilled in Mathematics and English. However, if you do not fall into this category, selecting coaching can be a more pragmatic approach. Coaching offers valuable advantages, including structured preparation guidance and mentorship, which play a crucial role in clearing exams and preparing for interviews. Depending on personal preference, you can opt for either online coaching or traditional classroom coaching to receive the necessary support and guidance.",
+        },
+        {
+          question: "Is YouTube enough for preparation?",
+          answer:
+            "YouTube stands out as an excellent resource for free exam preparation. It provides a multitude of practice questions and live sessions dedicated to specific topics, making it a valuable supplementary resource. However, it should be noted that relying solely on YouTube may not be sufficient to successfully crack exams, particularly if your goal is to secure admission into top universities. Check out our Youtube channel: TBT - The Bodhi Tree.",
+        },
+        {
+          question: "Which is the best time for MBA Coaching?",
+          answer:
+            "The optimal timeframe for preparation typically ranges from 9 to 12 months. However, it's essential to emphasize that the key determinant of success is not the duration, but rather the level of dedication and effort invested. Even if you have only 6 months to prepare for an exam, it is still possible to succeed if you approach it with the right mindset and effective study strategies. In our perspective, the ideal time to start preparation was yesterday, but the second-best time is today.",
+        },
+        {
+          question:
+            "How much percentile is required to get into top B-schools?",
+          answer:
+            "There is a distinction between receiving calls from IIMs and securing admissions in IIMs. The latter depends on various factors such as category, gender, academic performance in 10th, 12th, and undergraduate studies, work experience, and performance in interviews. Generally, achieving a percentile of 99.5+ is necessary to receive calls from IIM A, B, C, while a percentile of around 95 is typically required for calls from new IIMs in the CAT exam. Shifting focus to CET, attaining a percentile of 99+ guarantees admission to excellent colleges across Maharashtra, irrespective of your 10th, 12th, undergraduate marks, work experience, or any other GDPI process.",
+        },
+        {
+          question: "How to use The Bodhi Tree’s Online Preparation Course?",
+          answer:
+            "The Online Preparation Course provided by The Bodhi Tree is facilitated through an exceptional Learning Management System (LMS). The LMS boasts a user-friendly navigation system, ensuring ease of use for learners. As a trial user, you can sign up and allocate just 10 minutes to familiarize yourself with the learning process. In case you have any doubts or inquiries, feel free to reach out to us for assistance. To check the trial lessons click here.",
+        },
+        {
+          question:
+            "Is The Bodhi Tree's Online Coaching alone sufficient to crack the Entrance Exams?",
+          answer:
+            "Absolutely, without a doubt. The online preparation course provides comprehensive and clear explanations for all the essential concepts. The study material offers ample practice opportunities, while the mock series prepares you effectively for the actual exams. When designing the course, we ensured that it encompasses everything necessary for students to successfully crack the exams, including:\n1. Thorough explanations starting from the basics\n2. Abundant practice questions\n3. Mock exams along with strategies and analysis\n4.  Weekly quizzes and additional resources\n The Online Coaching Courses are designed to be self-sufficient for        preparation. There is no need to rely on any other study materials.",
+        },
+        {
+          question:
+            "Can we view the videos more than once in any of The Bodhi Tree’s Online Courses?",
+          answer:
+            "Certainly. You have the freedom to view each video in the Online Course as many times as you wish within the validity period. Unlike some other online preparation platforms in the market, we do not impose any limitations on the number of views. We believe in providing unrestricted access to our course content to ensure a seamless learning experience.",
+        },
+        {
+          question:
+            'The Live Online Preparation bundles that you provide have study material, online course, mocks etc. Is the "Study Material" a replica of the online course?',
+          answer:
+            "The study material we provide through shipping is distinct from the Online preparation course. It consists of practice questions that correspond to the topics and concepts covered in the online course. The study material is not a mere replica; it is entirely separate and unique compared to the content provided online.",
+        },
+        {
+          question:
+            "You claim to be the Best Online Coaching for MBA Entrance Exams, Banking and Government exams as well as for International exams like GRE, GMAT, SAT, IELTS, TOEFL, Duolingo. How do you know this?",
+          answer:
+            "This is a straightforward matter. From our perspective, we believe we are the sole provider of a comprehensive Online Preparation Course. Our offering includes a wide range of resources such as Live Lectures, Doubt and Strategy Sessions, 1-on-1 Mentorships, Concept Videos, Concept Quizzes, Solved Examples, Topic Tests, Practice Tests, Practice Questions, Mocks, E-Books, and Weekly Quizzes. Most available products in the market tend to be limited to test series, e-books, or recorded classroom lectures. In our view, none of these fully qualify as an online course. We firmly believe that online preparation should encompass more than simply reading PDFs on a laptop. Considerable time and effort have been invested in meticulously designing our online coaching program.",
+        },
+        {
+          question:
+            "How do we get our doubts clarified on the Online Preparation Course?",
+          answer:
+            'If you have any questions regarding any aspect of the course, you can post them on the discussion board, and one of our team members will respond within 48 hours, usually. The discussion board also provides an opportunity to explore questions raised by fellow students. Additionally, you can post other queries on our Telegram group and channel. For doubt resolution, you can send your queries to our coordinators via WhatsApp, and they will be forwarded to the appropriate doubt-solving faculty or our head faculty for the respective sections/topics. Furthermore, during Live lectures and doubt-solving sessions, all your doubts will be addressed. We are committed to answering every meaningful query across all platforms, with emphasis on the keyword "meaningful." You can also get them clarified by email at tbtprep@gmail.com. Kindly add ‘DOUBTS’ in the subject.',
+        },
+        {
+          question:
+            "You state repeatedly that the Online Coaching Course has been designed to help one learn at one's own pace. How so?",
+          answer:
+            "The Online Coaching Course offered by The Bodhi Tree incorporates a combination of live lectures, videos, and quizzes. On average, a class, which is typically designed to be covered in approximately 2.5 hours for an above-average student, consists of concept videos and concept quizzes. Each video focuses on a specific idea, allowing students to skip videos for concepts they are already comfortable with. In addition to the videos, there are concept quizzes following each video. These quizzes consist of simple practice questions aimed at reinforcing the understanding of the concept. Students have the option to skip these quizzes if they feel confident with the questions. Furthermore, there are timed Topic Tests that provide questions reflecting the difficulty level of the specific exam for which the student has enrolled. These tests are accompanied by detailed solutions, and some of the more challenging questions even have video solutions. Students can choose to skip the solutions or watch the corresponding videos. The flexibility in selecting the preferred learning medium enables students to adjust the pace of their studies.",
+        },
+        {
+          question: "Till what date is the online coaching valid?",
+          answer:
+            "The duration of validity for each bundle is specified in the bundle details. In the event of an exam postponement, the validity will be extended accordingly. For students who wish to extend the course duration for reasons other than exam postponement, they can reach out to us at 84217 93966. Any upgrades or additions made to the course will be accessible to all enrolled students.",
+        },
+        {
+          question: "Does The Bodhi Tree offer live sessions?",
+          answer:
+            "Most Definitely Yes. We offer to cover the entire syllabus through live sessions. Different bundles will have different offerings, which you can check on our website.",
+        },
+        {
+          question:
+            "How many video lectures are there in a The Bodhi Tree Online Coaching course?",
+          answer:
+            "The course includes an extensive collection of over 300 recorded videos (excluding live lectures) that amount to approximately 300+ hours of content. Moreover, there are more than 50,000 practice questions, a resource unparalleled by any other institute worldwide. These questions are meticulously discussed in great detail, ensuring a thorough understanding of the subject matter. To provide you with a glimpse of the course content, we offer trial lessons. We encourage you to explore these free resources before deciding to enroll in any of the course bundles. By doing so, you will gain a crystal clear understanding of the course's contents and structure. It's our \"Try before You Buy\" approach to help you make an informed decision.",
+        },
+        {
+          question: "What is the eligibility for different exams?",
+          answer:
+            "The primary requirement for various exams such as MBA entrance exams, Banking and Government exams, GRE, and GMAT is that the candidate should hold a bachelor's degree. However, this criterion does not apply to the SAT exam. In addition to this general eligibility criterion, there are specific requirements that may vary depending on the exam or university. Here are some additional points to consider: 1. The aspirant should have completed their Under Graduation, including correspondence courses, with a minimum aggregate of 50% marks or an equivalent qualification from a recognized university. 2. It is mandatory for the aspirant to have completed their education up to the Graduation level. 3. Candidates who are in their final year of Graduation are also eligible to apply for certain exams. Moreover, individuals who have completed a diploma course and then pursued their Under Graduation are also eligible. Please note that the eligibility criteria can differ across exams and universities. For more specific details and information, we encourage you to contact us for further assistance.",
+        },
+        {
+          question:
+            "What is the size of the videos? Can we watch it with even a 1MBPs connection?",
+          answer:
+            "As stated earlier in this section, our videos are significantly smaller in size compared to YouTube videos, with a duration that is approximately one-fourth of the average YouTube video. Therefore, if you have an internet connection that allows you to stream content on YouTube, you will have no difficulty accessing and taking our course. By utilizing screen capture technology, we are able to keep our video length concise and focused. This approach has enabled us to develop the entire course content based on this efficient model.",
+        },
+        {
+          question:
+            "What are the technical specifications my machine needs to have for the CAT Online course to work?",
+          answer:
+            "To access the course, it is recommended to have an internet connection with a speed of approximately 1 Mbps or higher, although the course can still be accessed with lower speeds. The videos can be loaded on any standard web browser. A straightforward way to check if your system meets the requirements is by trying out our trial lessons. If you can watch videos on YouTube smoothly using your computer and internet connection, you should have no issues viewing the entire content of The Bodhi Tree's online course.",
+        },
+      ];
+
+      // Function to dynamically generate the pop-up menu items
+      function generatePopupMenu() {
+        const popupMenu = document.getElementById("popupMenu");
+        const ul = document.createElement("ul");
+
+        questionsAndAnswers.forEach(({ question, answer }) => {
+          const li = document.createElement("li");
+          li.textContent = question;
+          li.onclick = () => selectQuestion(question, answer);
+          ul.appendChild(li);
+        });
+
+        popupMenu.appendChild(ul);
+      }
+
+      // Call the function to generate the pop-up menu on page load
+      generatePopupMenu();
+      const chatbox = document.getElementById("chatbox");
+
+      function cleanUpSentence(sentence) {
+        const termsArray = sentence?.toLowerCase().match(/\b\w+\b/g);
+        return termsArray ? termsArray : [];
+      }
+
+      function findMatchingIntent(sentenceWords) {
+        for (const intent of intents.intents) {
+          const patternWords = cleanUpSentence(intent.patterns.join(" "));
+          const similarity = calculateSimilarity(sentenceWords, patternWords);
+
+          if (similarity >= 0.2) {
+            return intent.responses[
+              Math.floor(Math.random() * intent.responses.length)
+            ];
+          }
+        }
+
+        return "I'm sorry, I didn't understand that.";
+      }
+
+      function calculateSimilarity(words1, words2) {
+        const intersection = words1.filter((word) => words2.includes(word));
+
+        // Consider the length of input sentences
+        const similarity =
+          intersection.length / Math.sqrt(words1.length * words2.length);
+
+        return similarity;
+      }
+
+      function sendMessage() {
+        const inputElement = document.getElementById("messageInput");
+        const message = inputElement.value.trim();
+
+        if (message !== "") {
+          const chatbox = document.getElementById("chatbox");
+
+          // Display the user message with a 'user' class
+          const userMessageElement = document.createElement("div");
+          userMessageElement.innerHTML = `<span class="you">You:</span> ${message}`;
+          userMessageElement.classList.add("user"); // Add 'user' class
+          chatbox.appendChild(userMessageElement);
+
+          const cleanedMessage = cleanUpSentence(message);
+          const botResponse = findMatchingIntent(cleanedMessage);
+
+          // Check if the user's message matches any pre-defined question
+          const matchingQuestion = questionsAndAnswers.find(
+            (item) =>
+              cleanUpSentence(item.question).join(" ") ===
+              cleanedMessage.join(" ")
+          );
+
+          if (matchingQuestion) {
+            // If a pre-defined question is matched, display the corresponding answer with a 'chopperomon' class
+            const botMessageElement = document.createElement("div");
+            botMessageElement.innerHTML = `<span class="bot">Choperomon:</span>${matchingQuestion.answer}`;
+            botMessageElement.classList.add("chopperomon"); // Add 'chopperomon' class
+            chatbox.appendChild(botMessageElement);
+          } else {
+            // If no pre-defined question is matched, display the response from findMatchingIntent
+            const botMessageElement = document.createElement("div");
+            botMessageElement.innerHTML = `<span class="bot">Chopperomon:</span> ${botResponse}`;
+            botMessageElement.classList.add("chopperomon"); // Add 'chopperomon' class
+            chatbox.appendChild(botMessageElement);
+          }
+
+          // Clear the input field
+          inputElement.value = "";
+        }
+      }
+
+      function handleKeyDown(event) {
+        if (event.key === "Enter") {
+          sendMessage(document.getElementById("messageInput").value.trim());
+        }
+      }
+      function openPopupMenu() {
+        console.log("Toggling popup menu");
+        const popupMenu = document.getElementById("popupMenu");
+
+        // Toggle the display style
+        popupMenu.style.display =
+          popupMenu.style.display === "none" || popupMenu.style.display === ""
+            ? "block"
+            : "none";
+      }
+
+      // Add an event listener to close the pop-up menu when clicking anywhere outside of it
+      window.addEventListener("click", function (event) {
+        const popupMenu = document.getElementById("popupMenu");
+        const popupButton = document.getElementById("popupButton");
+
+        // Check if the clicked element is outside the pop-up menu and the popup button
+        if (!popupMenu.contains(event.target) && event.target !== popupButton) {
+          // Close the pop-up menu
+          popupMenu.style.display = "none";
+        }
+      });
+
+      function selectQuestion(question, answer) {
+        // Display the user message with a 'user' class
+        const userMessageElement = document.createElement("div");
+        userMessageElement.innerHTML = `<span class="you">You:</span> ${question}`;
+        userMessageElement.classList.add("user"); // Add 'user' class
+        chatbox.appendChild(userMessageElement);
+
+        // Display the selected answer with a 'chopperomon' class
+        const botMessageElement = document.createElement("div");
+        botMessageElement.innerHTML = `<span class="bot">Chopperomon:</span> ${answer}`;
+        botMessageElement.classList.add("chopperomon"); // Add 'chopperomon' class
+        chatbox.appendChild(botMessageElement);
+
+        // Close the pop-up menu after selecting a question
+        const popupMenu = document.getElementById("popupMenu");
+        popupMenu.style.display = "none";
+      }
+      window.addEventListener("click", function (event) {
+        const chatContainer = document.getElementById("chat-container");
+        const toggleButton = document.getElementById("toggleButton");
+      
+        // Check if the clicked element is outside the chat container and the toggle button
+        if (!chatContainer.contains(event.target) && event.target !== toggleButton) {
+          // Close the chat container and show the toggle button
+          chatContainer.style.display = "none";
+          toggleButton.style.display = "block";
+        }
+      });
+      function toggleChat() {
+         document.getElementById("chat-container").style.display='block'
+         document.getElementById("toggleButton").style.display="none"
+           // Toggle the display of the chat container and the toggle button
+        chatContainer.style.display = chatContainer.style.display === "none" ? "block" : "none";
+        toggleButton.style.display = toggleButton.style.display === "none" ? "block" : "none";
+
+        
+      }
+      function deleteChats() {
+        const chatbox = document.getElementById("chatbox");
+    
+        // Remove all child elements (messages) from the chatbox
+        while (chatbox.firstChild) {
+          chatbox.removeChild(chatbox.firstChild);
+        }
+      }
+      
+    </script>
+  </body>
+</html>
