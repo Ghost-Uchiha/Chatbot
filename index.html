@@ -193,7 +193,7 @@
         background-color: transparent;
       }
       #toggleButton {
-        background-image: url('https://whatfix.com/blog/wp-content/uploads/2022/10/insurance-chatbot.png');
+        background-image: url('https://github.com/Ghost-Uchiha/Chatbot/blob/main/insurance-chatbot-removebg-preview.png?raw=true');
         background-size: cover; /* Ensure the image covers the entire button */
         background-repeat: no-repeat; /* Prevent the image from repeating */
         background-position: center; /* Center the image within the button */
@@ -201,16 +201,107 @@
         height:auto;
         width: auto;
         border: none;
-        cursor: pointer;
-        transition: background-size 0.3s, box-shadow 0.3s;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;     
+        
       }
     
       #toggleButton:hover {
-         /* Increase size on hover */
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         transform: scale(1.05); /* Increase size on hover */
       }
+      #courseButton {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: none;
+        border-top: 2px solid #ddd;
+        background-color: #ffeb3b;
+        cursor: pointer;
+        
+      }
+      #courseButton:hover {
+        background-color: #f3e77e;
+        color: #000;
+        
+      }
+      #courseList {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    #courseList li {
+        width: 100%;
+        border: none;
+    }
+    
+    #courseList li a {
+        text-decoration: none;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        color: #000;
+        border: none;
+        background-color: #ffeb3b;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    #courseList li a:hover {
+        background-color: #f3e77e;
+        color: #000;
+    }
+    
+    .course-menu {
+        display: none;
+        position: absolute;
+        top: 55%;
+        left: 0;
+        background-color: #ffeb3b;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        z-index: 1;
+        width: 100%;
+        min-height: 50px;
+    }
+    
+    #courseList ul{
+        list-style-type: none;
+    }
+    #courseList {
+        padding: 0;
+        margin: 0;
+        overflow-y: auto; 
+        max-height: 145px; 
+    }
+    
+    #courseList::-webkit-scrollbar {
+        width: 10px; 
+    }
+    
+    #courseList::-webkit-scrollbar-thumb {
+        background-color: #888; 
+        border-radius: 5px; 
+    }
+    
+    #courseList::-webkit-scrollbar-track {
+        background-color: #eee;
+        border-radius: 5px; 
+    }
+    
+    .course-menu li {
+        cursor: pointer;
+        width: 80%;
+        border-radius: 10px;
+        transition: background-color 0.3s;
+    }
+    
+    .course-menu li:hover {
+        background-color: #ddd;
+        border-radius: 10px;
+        width: 80%;
+    }
+    
     </style>
   </head>
   <body>
@@ -230,12 +321,14 @@
       <button onclick="sendMessage()" id="sendButton">Send</button>
       <button onclick="deleteChats()" id="deleteButton"><svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 64 64" id="bin"><path fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M50,14H14l3.72,38.3a4,4,0,0,0,4,3.7H42.29a4,4,0,0,0,4-3.7Z"></path><line x1="37.05" x2="38.11" y1="55.33" y2="18.97" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><line x1="25.89" x2="26.95" y1="18.97" y2="55.33" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><line x1="10" x2="54" y1="14" y2="14" fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></line><polyline fill="none" stroke="#ffb90b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="24 14 26 8 38 8 40 14"></polyline></svg></button>
       </div>
-      <!-- Button to open the pop-up menu -->
+      
+      <button onclick="openLinks()" id="courseButton">Show Course List</button>
+      <div id="courseList" class="course-menu"></div>
       <button onclick="openPopupMenu()" id="popupButton">
         Select a Question
       </button>
 
-      <!-- Pop-up menu with predefined questions (generated in JavaScript) -->
+      
       <div id="popupMenu" class="popup-menu"></div>
     </div>
     <script>
@@ -260,12 +353,12 @@
           {
             tag: "course_info",
             patterns: [
-              "tell me about [course name]",
-              "information on [course name]",
-              "details about [course name]",
+              "tell me about MBA Sage Mode",
+              "information on MBA Sage Mode",
+              "details about MBA",
             ],
             responses: [
-              "Sure! [Course Name] is a [brief description of the course]. You can find more details on our website.",
+              "Sure! The Bodhi Tree's flagship course gives you a 'holistic' (It is compulsory for an MBA graduate to use this word) approach to crack MBA CET. Apart from video lectures by JBIMS alumni, you also get live lectures from them. Not only that but you also get 1-on-1 guidance and counselling from JBIMS alumni so that you can pick their brains and understand their strategies to crack MBA CET. We call this bundle ULTIMATE on steroids! This pack is for those who want to leave no stone unturned for their quest for the best!",
             ],
           },
           {
@@ -470,6 +563,87 @@
         },
       ];
 
+      const courses =[ 
+      {
+        title: 'MBA CET BLITZKRIEG-Crash-Course',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-BLITZKRIEG-Crash-Course'
+      },
+      {
+        title:'XAT Crash Course',
+        link : 'https://getwise.tbtprep.com/learn/XAT-2023-Crash-Course'
+      },
+      {
+        title:'SNAP Crash Course',
+        link : 'https://getwise.tbtprep.com/learn/SNAP-2023-Crash-Course'
+      },
+      {
+        title:'Sage Mode Plus',
+        link: 'https://getwise.tbtprep.com/learn/Sage-Mode-Plus-2024'
+      },
+      {
+        title:'MBA CET Sage Mode',
+        link:'https://getwise.tbtprep.com/learn/MBA-CET-2024-SAGE-MODE'
+      },
+      {
+        title:'MBA CET Ultimate Plus Mode',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-Ultimate-Plus'
+      },
+      {
+        title:'MBA CET Ultimate Mode',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-ULTIMATE'
+      },
+      {
+        title:'MBA CET Optimus Plus',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-Optimus-Plus'
+      },
+      {
+        title:'MBA CET Optimus',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-Optimus'
+      },
+      {
+        title:'MBA CET Alpha',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-Alpha'
+      },
+      {
+        title: 'MBA CET Supreme',
+        link : 'https://getwise.tbtprep.com/learn/MBA-CET-2024-Supreme'
+      },
+      {
+        title:'Diamond 2024- For Banking And Goverment Exam',
+        link : 'https://getwise.tbtprep.com/learn/Diamond-2024'
+      },
+      ]
+
+      function generateLinks() {
+        const courseList = document.getElementById('courseList');
+        const ul = document.createElement('ul');
+    
+        courses.forEach(course => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.textContent = course.title;
+            link.href = course.link;
+            link.target = '_blank'; 
+            listItem.appendChild(link);
+            ul.appendChild(listItem);
+        });
+    
+        courseList.appendChild(ul);
+    }
+    
+      
+     
+      generateLinks();
+
+      function openLinks(){
+        const courseList = document.getElementById('courseList')
+        if (courseList.style.display === "none"){
+            courseList.style.display = "block"
+            } else {
+                courseList.style.display = "none";
+                };
+      }
+
       // Function to dynamically generate the pop-up menu items
       function generatePopupMenu() {
         const popupMenu = document.getElementById("popupMenu");
@@ -581,12 +755,18 @@
       window.addEventListener("click", function (event) {
         const popupMenu = document.getElementById("popupMenu");
         const popupButton = document.getElementById("popupButton");
+        const courseList = document.getElementById("courseList");
+        const courseButton = document.getElementById("courseButton");
 
         // Check if the clicked element is outside the pop-up menu and the popup button
         if (!popupMenu.contains(event.target) && event.target !== popupButton) {
           // Close the pop-up menu
           popupMenu.style.display = "none";
         }
+        if (!courseList.contains(event.target) && event.target !== courseButton) {
+            // Close the pop-up menu
+            courseList.style.display = "none";
+          }
       });
 
       function selectQuestion(question, answer) {
